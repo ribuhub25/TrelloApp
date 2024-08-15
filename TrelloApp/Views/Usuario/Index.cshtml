@@ -1,0 +1,52 @@
+﻿@model TrelloApp.ViewModels.TablaUsuarioVM
+@{
+    Layout = null;
+}
+
+<html>
+    <head>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <script src="~/js/usuario.js"></script>
+    </head>
+    <body>
+        <h1>Modulo de Usuarios</h1>
+        <table class="table">
+            <thead class="table-light">
+                <th>Usuario</th>
+                <th>Roles</th>
+                <th>Detalle</th>
+            </thead>
+            <tbody>
+                
+                   @foreach (var usuario in Model.Usuarios)
+                    {
+              
+                        <tr>
+                            <td>@usuario.Name</td>
+                            <td>
+                            @{
+                                var roles = Model.RolesByUser
+                                        .Where(ru => ru.UsuarioId == usuario.Id)
+                                        .Select(ru => ru.Rol.Description)
+                                        .ToList();
+                                var rolesString = string.Join(", ", roles);
+                            }
+                            @rolesString
+                            </td>
+                            <td>
+                                <button class="btn btn-info" onclick="detalleusuario('@usuario.Id')">Ver más</button>
+                            </td>
+                        </tr>
+                            
+                    }
+            
+            </tbody>
+        </table>
+        <div id="modalW">
+        
+        </div>
+    </body>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</html>
+

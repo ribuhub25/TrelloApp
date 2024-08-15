@@ -1,0 +1,14 @@
+﻿@using System.Security.Claims;
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="text-center centrar-div">
+    @if (User.Identity!.IsAuthenticated)
+    {
+        <h1 class="display-1">
+            <span class="display-3">Bienvenido Sr. @User.Claims.Where(c => c.Type == ClaimTypes.Name).Select(c => c.Value).SingleOrDefault() a </span><b>TRELLO APP...</b>
+        </h1>
+    }  
+</div>

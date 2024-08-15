@@ -1,0 +1,54 @@
+﻿@model TrelloApp.ViewModels.AddAdminVM
+<html>
+<head>
+    <title>Asignar Role</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <div class="row mt-5 justify-content-center">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-header">
+                    Asignar Role
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Home" asp-action="PanelControl" method="post">
+                        <div class="pb-2">
+                            <label class="form-label">Usuario</label>
+                            <select name="codigouser" asp-items="ViewBag.usuarios" class="form-select">
+                                <option>Seleccionar</option>
+                            </select>
+                        </div>
+                        <div class="pb-2">
+                            <label class="form-label">Rol</label>
+                            <select name="codigorol" asp-items="ViewBag.roles" class="form-select">
+                                <option>Seleccionar</option>
+                            </select>
+                        </div>
+                        <div class="d-grid gap-2 mb-3">
+                            <button class="btn btn-primary" type="submit">Agregar</button>
+                        </div>
+                        @if (ViewData["mensaje"] != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @ViewData["mensaje"]
+                            </div>
+                        }
+                        @if (ViewData["exito"] != null)
+                        {
+                            <div class="alert alert-success" role="alert">
+                                @ViewData["mensaje"]
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

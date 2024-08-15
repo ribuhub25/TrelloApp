@@ -1,0 +1,32 @@
+﻿@model IEnumerable<TrelloApp.Data.Producto>
+@{
+    Layout = null;
+}
+<html>
+    <body>
+    @if (ViewData["mensaje"] == null)
+    {
+        @* <ul>
+            @foreach (var producto in Model)
+            {
+                <li>@producto.Title</li>
+                <li>@producto.Description</li>
+                <li>@producto.Price</li>
+                <br />
+            }
+        </ul> *@
+        @* @await Component.InvokeAsync("TarjetaStore") *@
+        <div class="row row-cols-4 row-cols-md-4 g-4">
+        @foreach(var producto in Model)
+        {
+            @await Component.InvokeAsync("TarjetaStore",producto.Id)
+        }
+        </div>
+    }else
+    {
+    <span class="alert alert-danger">@ViewData["mensaje"]</span>
+    }
+    </body>
+
+</html>
+   
