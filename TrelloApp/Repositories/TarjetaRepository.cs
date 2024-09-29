@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Collections.Generic;
 using TrelloApp.Models;
 
@@ -6,10 +7,12 @@ namespace TrelloApp.Repositories
 {
     public interface ITarjetaRepository
     {
-        public Task<Tarjeta> Insert(Tarjeta tarjeta);
-        public IEnumerable<Tarjeta> GetTarjetas();
-
-        public Tarjeta DetalleTarjeta(int id);
+        public Task<bool> Insert(Tarjeta tarjeta);
+        public Task<IEnumerable<Tarjeta>> GetTarjetas();
+        public Task<bool> DeleteTarjeta(int id);
+        public Task<Tarjeta> DetalleTarjeta(int id);
+        public Task<bool> Update(Tarjeta tarjeta);
+        public Task<bool> PutEstado(Tarjeta tarjeta);
     }
     public class TarjetaRepository : ITarjetaRepository
     {
@@ -19,21 +22,79 @@ namespace TrelloApp.Repositories
             _context = context;
         }
 
-        public Tarjeta DetalleTarjeta(int id)
+        public async Task<bool> DeleteTarjeta(int id)
         {
-            return _context.Tarjetas.FirstOrDefault(x => x.Id == id);
+            var tarjeta = await _context.Tarjetas.FindAsync(id);
+            if (tarjeta != null)
+            {
+                _context.Tarjetas.Remove(tarjeta);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            else return false;
+            
         }
 
-        public IEnumerable<Tarjeta> GetTarjetas()
+        public async Task<Tarjeta> DetalleTarjeta(int id)
         {
-            return _context.Tarjetas.ToList();
+#pragma warning disable CS8603 // Posible tipo de valor devuelto de referencia nulo
+            return  await _context.Tarjetas.FirstOrDefaultAsync(x => x.Id == id);
+#pragma warning restore CS8603 // Posible tipo de valor devuelto de referencia nulo
         }
 
-        public async Task<Tarjeta> Insert(Tarjeta tarjeta)
+        public async Task<IEnumerable<Tarjeta>> GetTarjetas()
         {
-            EntityEntry<Tarjeta> insertarTarjeta = await _context.Tarjetas.AddAsync(tarjeta);
-            await _context.SaveChangesAsync();
-            return insertarTarjeta.Entity;
+            return await _context.Tarjetas.ToListAsync();
+        }
+        public async Task<bool> Insert(Tarjeta tarjeta)
+        {
+            if(tarjeta.Description == null || tarjeta.Title == null)
+            {
+                return false;
+            }
+            else
+            {
+                await _context.Tarjetas.AddAsync(tarjeta);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            
+        }
+
+        public async Task<bool> PutEstado(Tarjeta tarjeta)
+        {
+            Tarjeta? tarjetaEncontrada = await _context.Tarjetas.FindAsync(tarjeta.Id);
+            if(tarjetaEncontrada == null) { return false; }
+            else
+            {
+                tarjetaEncontrada.EstadoId = tarjeta.EstadoId;
+                tarjetaEncontrada.date_updated = DateTime.Now;
+                await _context.SaveChangesAsync();
+                return true;
+            }    
+        }
+
+        public async Task<bool> Update(Tarjeta tarjeta)
+        {
+            if (tarjeta.Description == null || tarjeta.Title == null)
+            {
+                return false;
+            }
+            else
+            {
+                var tarjetaUpdate = await _context.Tarjetas.FindAsync(tarjeta.Id);
+                if (tarjetaUpdate != null)
+                {
+                    tarjetaUpdate.Estado = tarjeta.Estado;
+                    tarjetaUpdate.Description = tarjeta.Description;
+                    tarjetaUpdate.Title = tarjeta.Title;
+                    tarjetaUpdate.date_updated = DateTime.Now;
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                else return false;           
+            }
+
         }
     }
 }

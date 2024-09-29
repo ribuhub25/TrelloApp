@@ -12,9 +12,14 @@ namespace TrelloApp.ViewComponents
             _repo = repo;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public async Task<IViewComponentResult> InvokeAsync(int id)
         {
-            var tarjetas = _repo.GetTarjetas();
+            //var tarjetas = await _repo.GetTarjetas().Where(t => t.EstadoId.Equals(id));
+            var query = from trj in await _repo.GetTarjetas()
+                        where trj.EstadoId == id
+                        select trj;
+            var tarjetas = query.ToList();
+            ViewBag.Estadoid = id;
             return View(tarjetas);
         }
 

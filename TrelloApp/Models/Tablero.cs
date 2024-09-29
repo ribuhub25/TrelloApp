@@ -15,7 +15,7 @@ namespace TrelloApp.Models
         public DateTime? date_updated { get; set; }
         public int UsuarioId { get; set; }
         public Usuario Usuario { get; set; }
-        public ICollection<Estado> Estado { get; set; }
+        public ICollection<Estado> Estados { get; set; }
         
     }
 }

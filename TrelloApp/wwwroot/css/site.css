@@ -20,7 +20,7 @@ html {
 body {
     margin-bottom: 60px;
     color: whitesmoke;
-    background: url("//images.ctfassets.net/rz1oowkt5gyp/6bFuTiN5YQ78rFkHb3aJlo/b608362b08e14f5dec4c4aeea3a3ca72/white-wave-mobile.svg") center bottom -0.5px / 100% 24% no-repeat scroll padding-box border-box, linear-gradient(60deg, rgb(82, 67, 170), rgb(237, 80, 180)) 0% 0% / auto no-repeat scroll padding-box border-box rgb(82, 67, 170);
+    background: rgb(82, 67, 170);
 }
 .centrar-div {
     position: absolute;

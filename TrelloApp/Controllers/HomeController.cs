@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TrelloApp.Controllers
 {
-    [Authorize]
+    
     public class HomeController : Controller
     {
         private readonly ITableroRepository _tableroRepository;
@@ -45,11 +45,6 @@ namespace TrelloApp.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Acceso");
-        }
-
-        public async Task<IActionResult> Tableros()
-        {
-            return View();
         }
 
         [HttpGet]

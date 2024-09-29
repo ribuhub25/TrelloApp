@@ -28,10 +28,10 @@ namespace TrelloApp.Models
                 .WithMany(u => u.RolesUsuarios)
                 .HasForeignKey(ru => ru.UsuarioId);
 
-            //builder.ApplyConfiguration(new TableroSeed());
-            builder.ApplyConfiguration(new RolSeed());
             builder.ApplyConfiguration(new UsuarioSeed());
-            builder.ApplyConfiguration(new RolesUsuariosSeed());
+            builder.ApplyConfiguration(new RolSeed());
+            //builder.ApplyConfiguration(new RolesUsuariosSeed());
+            //builder.ApplyConfiguration(new TableroSeed());
         }
     }
 }

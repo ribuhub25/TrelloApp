@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TrelloApp.Models;
 using TrelloApp.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,8 @@ builder.Services.AddScoped<ITarjetaRepository, TarjetaRepository>();
 builder.Services.AddScoped<IRolesRepository, RolesRepository>();
 builder.Services.AddScoped<IRolesUsuariosRepository, RolesUsuariosRepository>();
 builder.Services.AddScoped<IFakeApiStoreRepository, FakeApiStoreRepository>();
+builder.Services.AddScoped<IEstadoRepository, EstadoRepository>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options=>
@@ -25,7 +28,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Acceso/Login";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
     });
+
+
 var app = builder.Build();
+//builder.Services.AddDefaultIdentity<Usuario>().AddRoles<Rol>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

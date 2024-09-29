@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace TrelloApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Creacion : Migration
+    public partial class First : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,7 +19,9 @@ namespace TrelloApp.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -32,7 +36,9 @@ namespace TrelloApp.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    date_created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    date_updated = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -96,7 +102,8 @@ namespace TrelloApp.Migrations
                     TableroId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     date_created = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    date_updated = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    date_updated = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -107,6 +114,12 @@ namespace TrelloApp.Migrations
                         principalTable: "Tableros",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Estados_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -119,7 +132,8 @@ namespace TrelloApp.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     date_created = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    date_updated = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    date_updated = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -130,12 +144,39 @@ namespace TrelloApp.Migrations
                         principalTable: "Estados",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tarjetas_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "Description", "created_at", "updated_at" },
+                values: new object[,]
+                {
+                    { 1, "Administrador", new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1646), null },
+                    { 2, "Premium", new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1662), null },
+                    { 3, "Estandar", new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1663), null },
+                    { 4, "Empleado", new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1665), null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Usuarios",
+                columns: new[] { "Id", "Email", "Name", "Password", "date_created", "date_updated" },
+                values: new object[] { 1, "admin@gmail.com", "Admin", "administradortrelloapp", null, null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Estados_TableroId",
                 table: "Estados",
                 column: "TableroId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Estados_UsuarioId",
+                table: "Estados",
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RolesUsuarios_RolId",
@@ -151,6 +192,11 @@ namespace TrelloApp.Migrations
                 name: "IX_Tarjetas_EstadoId",
                 table: "Tarjetas",
                 column: "EstadoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tarjetas_UsuarioId",
+                table: "Tarjetas",
+                column: "UsuarioId");
         }
 
         /// <inheritdoc />

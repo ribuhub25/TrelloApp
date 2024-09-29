@@ -14,7 +14,8 @@ namespace TrelloApp.Models
         public string Name { get; set; }
         public DateTime? date_created { get; set; }
         public DateTime? date_updated { get; set; }
-
-        public ICollection<Tarjeta> Tarjeta { get; set; }
+        public int UsuarioId { get; set; }
+        public Usuario Usuario { get; set; }
+        public ICollection<Tarjeta> Tarjetas { get; set; }
     }
 }

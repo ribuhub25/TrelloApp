@@ -37,6 +37,9 @@ namespace TrelloApp.Migrations
                     b.Property<int>("TableroId")
                         .HasColumnType("int");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("date_created")
                         .HasColumnType("datetime2");
 
@@ -46,6 +49,8 @@ namespace TrelloApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TableroId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Estados");
                 });
@@ -62,12 +67,13 @@ namespace TrelloApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UsuarioId")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("created_at")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("updated_at")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Roles");
 
@@ -75,12 +81,26 @@ namespace TrelloApp.Migrations
                         new
                         {
                             Id = 1,
-                            Description = "Administrador"
+                            Description = "Administrador",
+                            created_at = new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1646)
                         },
                         new
                         {
                             Id = 2,
-                            Description = "Empleado"
+                            Description = "Premium",
+                            created_at = new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1662)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Estandar",
+                            created_at = new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1663)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Empleado",
+                            created_at = new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1665)
                         });
                 });
 
@@ -97,13 +117,6 @@ namespace TrelloApp.Migrations
                     b.HasIndex("RolId");
 
                     b.ToTable("RolesUsuarios");
-
-                    b.HasData(
-                        new
-                        {
-                            UsuarioId = 1,
-                            RolId = 1
-                        });
                 });
 
             modelBuilder.Entity("TrelloApp.Models.Tablero", b =>
@@ -160,6 +173,9 @@ namespace TrelloApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("date_created")
                         .HasColumnType("datetime2");
 
@@ -169,6 +185,8 @@ namespace TrelloApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EstadoId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Tarjetas");
                 });
@@ -193,6 +211,12 @@ namespace TrelloApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("date_created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("date_updated")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
@@ -202,48 +226,28 @@ namespace TrelloApp.Migrations
                         {
                             Id = 1,
                             Email = "admin@gmail.com",
-                            Name = "Auron",
-                            Password = "12345"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Email = "Hefestinho@gmail.com",
-                            Name = "Hefesto",
-                            Password = "12345"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Email = "Snapero@gmail.com",
-                            Name = "Gilgamesh",
-                            Password = "snap"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Email = "atlas@gmail.com",
-                            Name = "Javi",
-                            Password = "atlas"
+                            Name = "Admin",
+                            Password = "administradortrelloapp"
                         });
                 });
 
             modelBuilder.Entity("TrelloApp.Models.Estado", b =>
                 {
                     b.HasOne("TrelloApp.Models.Tablero", "Tablero")
-                        .WithMany("Estado")
+                        .WithMany("Estados")
                         .HasForeignKey("TableroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Tablero");
-                });
+                    b.HasOne("TrelloApp.Models.Usuario", "Usuario")
+                        .WithMany("Estados")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("TrelloApp.Models.Rol", b =>
-                {
-                    b.HasOne("TrelloApp.Models.Usuario", null)
-                        .WithMany("Roles")
-                        .HasForeignKey("UsuarioId");
+                    b.Navigation("Tablero");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("TrelloApp.Models.RolesUsuarios", b =>
@@ -279,17 +283,25 @@ namespace TrelloApp.Migrations
             modelBuilder.Entity("TrelloApp.Models.Tarjeta", b =>
                 {
                     b.HasOne("TrelloApp.Models.Estado", "Estado")
-                        .WithMany("Tarjeta")
+                        .WithMany("Tarjetas")
                         .HasForeignKey("EstadoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TrelloApp.Models.Usuario", "Usuario")
+                        .WithMany("Tarjetas")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Estado");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("TrelloApp.Models.Estado", b =>
                 {
-                    b.Navigation("Tarjeta");
+                    b.Navigation("Tarjetas");
                 });
 
             modelBuilder.Entity("TrelloApp.Models.Rol", b =>
@@ -299,16 +311,18 @@ namespace TrelloApp.Migrations
 
             modelBuilder.Entity("TrelloApp.Models.Tablero", b =>
                 {
-                    b.Navigation("Estado");
+                    b.Navigation("Estados");
                 });
 
             modelBuilder.Entity("TrelloApp.Models.Usuario", b =>
                 {
-                    b.Navigation("Roles");
+                    b.Navigation("Estados");
 
                     b.Navigation("RolesUsuarios");
 
                     b.Navigation("Tableros");
+
+                    b.Navigation("Tarjetas");
                 });
 #pragma warning restore 612, 618
         }

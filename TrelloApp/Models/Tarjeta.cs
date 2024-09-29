@@ -13,5 +13,7 @@ namespace TrelloApp.Models
         public string Description { get; set; }
         public DateTime? date_created { get; set; }
         public DateTime? date_updated { get; set; }
+        public int UsuarioId { get; set; }
+        public Usuario Usuario { get; set; }
     }
 }

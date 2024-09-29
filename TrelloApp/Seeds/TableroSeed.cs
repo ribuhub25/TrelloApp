@@ -17,6 +17,7 @@ namespace TrelloApp.Seeds
                         Status = true,
                         date_created = DateTime.Today,
                         date_updated = DateTime.Today,
+                        UsuarioId = 1
                     }
                 );
         }

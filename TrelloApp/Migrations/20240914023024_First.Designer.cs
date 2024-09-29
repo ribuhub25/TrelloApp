@@ -12,8 +12,8 @@ using TrelloApp.Models;
 namespace TrelloApp.Migrations
 {
     [DbContext(typeof(TrelloContext))]
-    [Migration("20240807233626_Creacion")]
-    partial class Creacion
+    [Migration("20240914023024_First")]
+    partial class First
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,9 @@ namespace TrelloApp.Migrations
                     b.Property<int>("TableroId")
                         .HasColumnType("int");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("date_created")
                         .HasColumnType("datetime2");
 
@@ -49,6 +52,8 @@ namespace TrelloApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TableroId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Estados");
                 });
@@ -65,9 +70,41 @@ namespace TrelloApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("created_at")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("updated_at")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Administrador",
+                            created_at = new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1646)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Premium",
+                            created_at = new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1662)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Estandar",
+                            created_at = new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1663)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Empleado",
+                            created_at = new DateTime(2024, 9, 13, 21, 30, 24, 113, DateTimeKind.Local).AddTicks(1665)
+                        });
                 });
 
             modelBuilder.Entity("TrelloApp.Models.RolesUsuarios", b =>
@@ -139,6 +176,9 @@ namespace TrelloApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("date_created")
                         .HasColumnType("datetime2");
 
@@ -148,6 +188,8 @@ namespace TrelloApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EstadoId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Tarjetas");
                 });
@@ -172,20 +214,43 @@ namespace TrelloApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("date_created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("date_updated")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@gmail.com",
+                            Name = "Admin",
+                            Password = "administradortrelloapp"
+                        });
                 });
 
             modelBuilder.Entity("TrelloApp.Models.Estado", b =>
                 {
                     b.HasOne("TrelloApp.Models.Tablero", "Tablero")
-                        .WithMany("Estado")
+                        .WithMany("Estados")
                         .HasForeignKey("TableroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TrelloApp.Models.Usuario", "Usuario")
+                        .WithMany("Estados")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Tablero");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("TrelloApp.Models.RolesUsuarios", b =>
@@ -221,17 +286,25 @@ namespace TrelloApp.Migrations
             modelBuilder.Entity("TrelloApp.Models.Tarjeta", b =>
                 {
                     b.HasOne("TrelloApp.Models.Estado", "Estado")
-                        .WithMany("Tarjeta")
+                        .WithMany("Tarjetas")
                         .HasForeignKey("EstadoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TrelloApp.Models.Usuario", "Usuario")
+                        .WithMany("Tarjetas")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Estado");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("TrelloApp.Models.Estado", b =>
                 {
-                    b.Navigation("Tarjeta");
+                    b.Navigation("Tarjetas");
                 });
 
             modelBuilder.Entity("TrelloApp.Models.Rol", b =>
@@ -241,14 +314,18 @@ namespace TrelloApp.Migrations
 
             modelBuilder.Entity("TrelloApp.Models.Tablero", b =>
                 {
-                    b.Navigation("Estado");
+                    b.Navigation("Estados");
                 });
 
             modelBuilder.Entity("TrelloApp.Models.Usuario", b =>
                 {
+                    b.Navigation("Estados");
+
                     b.Navigation("RolesUsuarios");
 
                     b.Navigation("Tableros");
+
+                    b.Navigation("Tarjetas");
                 });
 #pragma warning restore 612, 618
         }

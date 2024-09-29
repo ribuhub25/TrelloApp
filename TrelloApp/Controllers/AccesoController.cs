@@ -6,15 +6,18 @@ using TrelloApp.ViewModels;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.ComponentModel;
 
 namespace TrelloApp.Controllers
 {
     public class AccesoController : Controller
     {
         private readonly IUsuarioRepository _usuarioRepository;
-        public AccesoController(IUsuarioRepository usuarioRepository)
+        private readonly IRolesUsuariosRepository _rolesUsuariosRepository;
+        public AccesoController(IUsuarioRepository usuarioRepository, IRolesUsuariosRepository rolesUsuariosRepository)
         {
             _usuarioRepository = usuarioRepository;
+            _rolesUsuariosRepository = rolesUsuariosRepository;
         }
         [HttpGet]
         public IActionResult Registrarse()
@@ -60,6 +63,7 @@ namespace TrelloApp.Controllers
         public async Task<IActionResult> Login(LoginVM modelo)
         {
             Usuario? usuario_encontrado = await _usuarioRepository.GetByCredencials(modelo.Email, modelo.Password);
+            var rolesUsuario = await _rolesUsuariosRepository.GetRolesByUser(usuario_encontrado);
             if (usuario_encontrado == null) {
                 ViewData["Mensaje"] = "No se encontraron coincidencias";
                 return View();
@@ -67,8 +71,15 @@ namespace TrelloApp.Controllers
 
             List<Claim> claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, usuario_encontrado.Name)
+                new Claim(ClaimTypes.Name, usuario_encontrado.Name),
+                new Claim(ClaimTypes.Email, usuario_encontrado.Email),
+                new Claim(ClaimTypes.NameIdentifier, usuario_encontrado.Id.ToString())
             };
+
+            foreach(var role in rolesUsuario)
+            {
+                claims.Add(new Claim(ClaimTypes.Role ,role.Rol.Description));
+            }
 
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             AuthenticationProperties properties = new AuthenticationProperties()
@@ -80,7 +91,7 @@ namespace TrelloApp.Controllers
                 new ClaimsPrincipal(claimsIdentity),
                 properties
                 );
-
+            
             return RedirectToAction("Index", "Home");
         }
     }

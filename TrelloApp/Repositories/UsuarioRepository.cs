@@ -16,7 +16,6 @@ namespace TrelloApp.Repositories
         public IQueryable<Usuario> GetUsuarios2();
         public Task<List<Usuario>> GetUsuarios();
         public Task<string> GetUsuarioById(int id);
-
         public Task<Usuario> GetUsuario(int id);
 
     }
